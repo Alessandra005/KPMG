@@ -1,0 +1,215 @@
+[
+  {
+    "paper_id": "2608.20316",
+    "version": "v1",
+    "title": "Pandora’s AI Model Routing Box: Efficient Allocation with Costly Value Estimation",
+    "source_file": "2608.20316v1_Pandora's AI Model Routing Box Efficient Allocation with Costly Value Estimation.pdf",
+    "n_pages": 28,
+    "body_font_size": 10.9,
+    "dropped_lines": {
+      "small_font(figure/table/footnote)": 229,
+      "running_header_footer": 54
+    },
+    "n_headings_detected": 25,
+    "warnings": [],
+    "excluded_sections": [
+      "Acknowledgements",
+      "References",
+      "Contents"
+    ],
+    "sections_detected": [
+      "1 Introduction",
+      "2 Setting",
+      "2.1 Experimental domains and value estimators",
+      "2.2 Value estimator costs",
+      "3 The Pandora’s Box Problem",
+      "4 Pandora’s Router",
+      "5 Pandora’s Bidder",
+      "6 Related Work",
+      "7 Conclusion",
+      "A Pandora’s Routing Objective",
+      "B Dataset Details",
+      "C Implementation details",
+      "C.1 Value estimators",
+      "C.2 Prompts",
+      "C.3 Experiment compute resources",
+      "D Supplemental Results",
+      "D.1 Number of queries",
+      "D.2 Auctions against weak opponents",
+      "D.3 Monetary costs for value functions",
+      "D.4 Numerical results and significance tests",
+      "D.5 Alternative algorithm",
+      "D.6 Non-Gaussian signal models"
+    ],
+    "n_chunks": 39,
+    "parse_status": "ok"
+  },
+  {
+    "paper_id": "2608.20318",
+    "version": "v1",
+    "title": "AI4AI-Bench: Benchmarking LLM Agents in Algorithmic Design for Recursive Self-Improvement",
+    "source_file": "2608.20318v1_AI4AI-Bench Benchmarking LLM Agents in Algorithmic Design for Recursive Self-Imp.pdf",
+    "n_pages": 19,
+    "body_font_size": 10.0,
+    "dropped_lines": {
+      "small_font(figure/table/footnote)": 373,
+      "running_header_footer": 19
+    },
+    "n_headings_detected": 19,
+    "warnings": [],
+    "excluded_sections": [
+      "References"
+    ],
+    "sections_detected": [
+      "1 Introduction",
+      "2 AI4AI-Bench",
+      "2.1 Task formulation",
+      "2.2 AI4AI-Bench algorithmic tasks",
+      "2.3 Protocol",
+      "2.4 Baselines",
+      "2.5 Scoring",
+      "3 Experiments",
+      "3.1 Setup",
+      "3.2 Results",
+      "4 Analysis",
+      "4.1 Most submissions change how the run goes, not how the model learns",
+      "4.2 Reasoning effort buys nerve, and nerve is what pays",
+      "4.3 What the submissions that reached the algorithmic layer did",
+      "5 Related work",
+      "6 Conclusion",
+      "A The ten tasks",
+      "B One task contract in full"
+    ],
+    "n_chunks": 26,
+    "parse_status": "ok"
+  },
+  {
+    "paper_id": "2608.20319",
+    "version": "v1",
+    "title": "Inducing Task Models from Computer-Use Traces",
+    "source_file": "2608.20319v1_Inducing Task Models from Computer-Use Traces.pdf",
+    "n_pages": 23,
+    "body_font_size": 10.9,
+    "dropped_lines": {
+      "small_font(figure/table/footnote)": 425
+    },
+    "n_headings_detected": 30,
+    "warnings": [],
+    "excluded_sections": [
+      "Acknowledgments",
+      "References"
+    ],
+    "sections_detected": [
+      "Abstract",
+      "1 Introduction",
+      "2 Problem Formulation",
+      "3 Method",
+      "3.1 Event Grounding and Activity Segmentation",
+      "3.2 Latent Task Induction",
+      "3.3 Task Model Construction",
+      "3.4 Implementation",
+      "4 Intrinsic Evaluation",
+      "4.1 Latent Task Induction Robustness",
+      "4.2 Latent Task Induction Stability",
+      "4.3 Task Model Fidelity",
+      "5 Extrinsic Evaluation",
+      "6 Related Work",
+      "7 Conclusion",
+      "Limitations",
+      "Ethics Statement",
+      "A Structural Validity Constraints",
+      "B Latent Task Induction Robustness",
+      "B.1 Error Analysis",
+      "C SkillsBench Trajectory Conversion",
+      "D Task Model Fidelity Rubric",
+      "D.1 Human Annotation Agreement",
+      "D.2 Fidelity on Non-linear Execution",
+      "D.3 Error Propagation across the Pipeline",
+      "D.4 Stability across Induction Runs",
+      "E Full Objective Rubric Results",
+      "F Implementation Details and Pipeline Prompt Templates"
+    ],
+    "n_chunks": 29,
+    "parse_status": "ok"
+  },
+  {
+    "paper_id": "2608.20320",
+    "version": "v1",
+    "title": "An Agentic Approach for Active Data Collection, Travel Behavior Modeling, and Weather-Sensitive Demand Prediction",
+    "source_file": "2608.20320v1_An Agentic Approach for Active Data Collection, Travel Behavior Modeling, and We.pdf",
+    "n_pages": 25,
+    "body_font_size": 10.9,
+    "dropped_lines": {
+      "small_font(figure/table/footnote)": 130,
+      "running_header_footer": 24
+    },
+    "n_headings_detected": 27,
+    "warnings": [],
+    "excluded_sections": [
+      "Acknowledgments",
+      "Author Contributions",
+      "Declaration of Conflicting Interests",
+      "References"
+    ],
+    "sections_detected": [
+      "Abstract",
+      "1 Introduction",
+      "2 Background and Related Work",
+      "2.1 Travel Behavior and Mode Choice",
+      "2.2 Data Collection Methods in Travel Behavior Research",
+      "2.3 LLMs for Behavioral Simulation",
+      "2.4 Multi-Agent Systems and LLM-Agent Frameworks",
+      "3 Methodology",
+      "3.1 Framework Overview",
+      "3.2 General Agent Representation and Workflow Orchestration",
+      "3.3 Data Collection Agent",
+      "3.4 Data Processing Agent",
+      "3.5 Data Modeling Agent",
+      "4 Case Study",
+      "4.1 Data Collection Agent: Chatbot Survey and Deployment",
+      "4.2 Data Processing Agent",
+      "4.3 Data Modeling Agent: Modeling and LLM Setup",
+      "5 Results",
+      "5.1 Sample Profile and Traditional Model Results",
+      "5.2 LLM Zero-Shot",
+      "5.3 Advanced LLM Configurations: Persona, Few-Shot, and Vision",
+      "6 Discussion",
+      "7 Conclusions"
+    ],
+    "n_chunks": 27,
+    "parse_status": "ok"
+  },
+  {
+    "paper_id": "2608.20331",
+    "version": "v1",
+    "title": "G-CARL: Grounded Checklist-Aligned Reward Learning for Patient-Oriented Medical Report Interpretation",
+    "source_file": "2608.20331v1_G-CARL Grounded Checklist-Aligned Reward Learning for Patient-Oriented Medical R.pdf",
+    "n_pages": 9,
+    "body_font_size": 10.0,
+    "dropped_lines": {
+      "small_font(figure/table/footnote)": 249
+    },
+    "n_headings_detected": 14,
+    "warnings": [],
+    "excluded_sections": [
+      "References"
+    ],
+    "sections_detected": [
+      "Abstract",
+      "1 Introduction",
+      "2 Related Works",
+      "3 Methods",
+      "3.1 Overall Architecture",
+      "3.2 Retrieval-Grounded Claim Reward",
+      "3.3 Case-Specific Checklist Reward",
+      "3.4 Multi-objective Reward Function",
+      "4 Experiments",
+      "4.1 Experimental Setup",
+      "4.2 Main Results on MMedReport",
+      "4.3 Ablation Study",
+      "5 Conclusion"
+    ],
+    "n_chunks": 15,
+    "parse_status": "ok"
+  }
+]
