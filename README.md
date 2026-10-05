@@ -13,6 +13,7 @@
 | Amanda Gantugs   | @AmandaG421   | BreakThroughTech fellow                                                  |
 | Curtis Lu        | @CurtisLuu    | Break Through Tech Fellow                                                |
 | Bhagyesh Jethwani| @Babagesh     | Break Through Tech Fellow                                                |
+| Alessandra Uribe | @Alessandra005| Break Through Tech Fellow                                                |
 
 ---
 
