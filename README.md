@@ -320,7 +320,8 @@ from retrieve import embed_query, search, retrieve
 # 1. Query embedding (+ optional HyDE enrichment) -> one normalized vector
 embed_query(question: str, use_hyde: bool = True) -> list[float]
 
-# 2. Retrieval layer: takes the embedded query, returns the k closest chunks
+# 2. Retrieval layer (not implemented yet; raises NotImplementedError):
+#    takes the embedded query, returns the k closest chunks
 search(query_embedding: list[float], k: int = 5, where: dict | None = None) -> list[dict]
 # [{"chunk_id", "paper_id", "title", "section_label", "section_path",
 #   "page_start", "page_end", "text", "score"}, ...]
