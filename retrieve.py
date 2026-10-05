@@ -14,6 +14,7 @@ Question: {question}"""
 
 _client = None
 _hyde_cache: dict[str, str] = {}
+_hyde_disabled_reason = ""
 
 
 def _gemini():
@@ -27,16 +28,16 @@ def _gemini():
 
 def hypothetical_document(question: str, retries: int = 3) -> str:
     """HyDE: an LLM-written passage that looks like the chunks we want to find.
-    Returns "" when no API key is set or every attempt fails, so retrieval still works."""
-    if not config.GEMINI_API_KEY:
+    Returns "" when no API key is set or the call fails, so retrieval still works."""
+    global _hyde_disabled_reason
+    if not config.GEMINI_API_KEY or _hyde_disabled_reason:
         return ""
     if question in _hyde_cache:
         return _hyde_cache[question]
-    from google.genai import types
+    from google.genai import errors, types
 
     gen_config = types.GenerateContentConfig(
         temperature=0.3,
-        thinking_config=types.ThinkingConfig(thinking_budget=0),
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
     )
     for attempt in range(retries):
@@ -50,11 +51,17 @@ def hypothetical_document(question: str, retries: int = 3) -> str:
             if doc:
                 _hyde_cache[question] = doc
             return doc
-        except Exception as e:
+        except errors.ServerError as e:
             if attempt == retries - 1:
                 print(f"HyDE generation failed, using the raw question only: {e}")
                 return ""
             time.sleep(2**attempt)
+        except Exception as e:
+            # Client errors (bad model name, quota exhausted, invalid key) won't fix themselves
+            # on retry, so skip HyDE for the rest of the session instead of failing per query.
+            _hyde_disabled_reason = str(e)
+            print(f"HyDE disabled for this session, using the raw question only: {e}")
+            return ""
 
 
 def embed_query(question: str, use_hyde: bool = True) -> list[float]:

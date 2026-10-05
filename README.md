@@ -323,4 +323,4 @@ retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = 
 # Lower score = more similar (cosine distance). `where` is a Chroma metadata filter.
 ```
 
-Retrieval uses HyDE (Hypothetical Document Embeddings): Gemini (`GEMINI_MODEL`, default `gemini-2.5-flash`) writes a short research-style passage answering the question, and the search vector is the normalized average of the question and passage embeddings. Without `GEMINI_API_KEY`, or if the call fails after retries, it falls back to embedding the raw question.
+Retrieval uses HyDE (Hypothetical Document Embeddings): Gemini (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`) writes a short research-style passage answering the question, and the search vector is the normalized average of the question and passage embeddings. Without `GEMINI_API_KEY`, or if the call fails after retries, it falls back to embedding the raw question.
