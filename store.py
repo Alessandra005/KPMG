@@ -17,6 +17,11 @@ def get_collection():
 
 
 def check_embedding_model(collection) -> None:
+    if collection.count() == 0:
+        raise RuntimeError(
+            f"Collection '{collection.name}' at {config.CHROMA_DB_PATH} is empty. "
+            "Run `python ingest.py` first."
+        )
     built_with = (collection.metadata or {}).get("embedding_model")
     if built_with != config.EMBEDDING_MODEL:
         raise RuntimeError(
