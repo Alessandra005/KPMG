@@ -13,7 +13,21 @@ def get_collection():
     )
 
 
-def ingest_chunks(chunks: list[dict], embeddings: list[list[float]]):
+def chunk_metadata(chunk: dict, titles: dict) -> dict:
+    # Chroma rejects None values, so every field falls back to a concrete default.
+    return {
+        "paper_id": chunk["paper_id"],
+        "title": titles.get(chunk["paper_id"], ""),
+        "section_label": chunk["section_label"],
+        "section_path": chunk.get("section_path", chunk["section_label"]),
+        "chunk_index": int(chunk.get("chunk_index", 0)),
+        "page_start": int(chunk.get("page_start", 0)),
+        "page_end": int(chunk.get("page_end", 0)),
+    }
+
+
+def ingest_chunks(chunks: list[dict], embeddings: list[list[float]], titles: dict | None = None):
+    titles = titles or {}
     collection = get_collection()
     for i in range(0, len(chunks), BATCH_SIZE):
         batch = chunks[i : i + BATCH_SIZE]
@@ -21,9 +35,6 @@ def ingest_chunks(chunks: list[dict], embeddings: list[list[float]]):
             ids=[c["chunk_id"] for c in batch],
             embeddings=embeddings[i : i + BATCH_SIZE],
             documents=[c["chunk_text"] for c in batch],
-            metadatas=[
-                {"paper_id": c["paper_id"], "section_label": c["section_label"]}
-                for c in batch
-            ],
+            metadatas=[chunk_metadata(c, titles) for c in batch],
         )
     return collection

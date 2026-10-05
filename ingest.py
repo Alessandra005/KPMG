@@ -1,6 +1,7 @@
 import argparse
 import json
 import sys
+from pathlib import Path
 
 import config
 
@@ -31,9 +32,18 @@ def load_chunks(path: str) -> list[dict]:
     return chunks
 
 
+def load_titles(chunks_path: str) -> dict:
+    """Map paper_id -> title from the papers.json the chunker writes beside the chunks."""
+    papers_path = Path(chunks_path).with_name("papers.json")
+    if not papers_path.exists():
+        return {}
+    with open(papers_path, encoding="utf-8") as f:
+        return {p["paper_id"]: p.get("title", "") for p in json.load(f)}
+
+
 def main():
     parser = argparse.ArgumentParser(description="Embed chunks and store them in ChromaDB.")
-    parser.add_argument("--chunks", default="./chunks.json")
+    parser.add_argument("--chunks", default=str(config.ROOT / "chunks" / "chunks.jsonl"))
     parser.add_argument("--db-path", help="Override CHROMA_DB_PATH")
     parser.add_argument("--model", help="Override EMBEDDING_MODEL")
     args = parser.parse_args()
@@ -52,7 +62,7 @@ def main():
     from store import ingest_chunks
 
     embeddings = embed_texts([c["chunk_text"] for c in chunks])
-    collection = ingest_chunks(chunks, embeddings)
+    collection = ingest_chunks(chunks, embeddings, load_titles(args.chunks))
     print(f"Collection '{collection.name}' now contains {collection.count()} chunks.")
 
 
