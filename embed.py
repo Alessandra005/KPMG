@@ -13,11 +13,11 @@ def get_model() -> SentenceTransformer:
     return _model
 
 
-def embed_texts(texts: list[str]) -> list[list[float]]:
+def embed_texts(texts: list[str], show_progress_bar: bool = False) -> list[list[float]]:
     vectors = get_model().encode(
         texts,
         batch_size=32,
-        show_progress_bar=True,
+        show_progress_bar=show_progress_bar,
         normalize_embeddings=True,
     )
     return vectors.tolist()

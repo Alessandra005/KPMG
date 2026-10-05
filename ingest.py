@@ -61,7 +61,7 @@ def main():
     from embed import embed_texts
     from store import ingest_chunks
 
-    embeddings = embed_texts([c["chunk_text"] for c in chunks])
+    embeddings = embed_texts([c["chunk_text"] for c in chunks], show_progress_bar=True)
     collection = ingest_chunks(chunks, embeddings, load_titles(args.chunks))
     print(f"Collection '{collection.name}' now contains {collection.count()} chunks.")
 
