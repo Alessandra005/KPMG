@@ -296,11 +296,13 @@ cp .env.example .env   # optional; defaults work. Keys: EMBEDDING_MODEL, CHROMA_
 ### Run ingestion
 
 ```bash
-python ingest.py --chunks ./chunks.json            # also accepts the chunking notebook's chunks.jsonl
+python ingest.py                                   # defaults to chunks/chunks.jsonl (+ titles from chunks/papers.json)
 python ingest.py --chunks ./chunks.json --db-path ./chroma_db --model all-MiniLM-L6-v2
 ```
 
-Ingestion uses upsert, so re-running is idempotent. Deleting `chroma_db/` and re-running rebuilds it.
+Ingestion uses upsert, so re-running is idempotent. Deleting `chroma_db/` and re-running rebuilds it. Relative `CHROMA_DB_PATH` values resolve against the repo root, so the notebook and the scripts always share one database.
+
+Each record stores `chunk_id` (id), the embedding, `chunk_text` (document), and metadata: `paper_id`, `title`, `section_label`, `section_path`, `chunk_index`, `page_start`, `page_end`.
 
 ### Chunk input format
 
@@ -315,7 +317,10 @@ A JSON list (or JSONL, one object per line). Each chunk must have these four fie
 ```python
 from retrieve import retrieve
 
-retrieve(question: str, k: int = 5) -> list[dict]
-# [{"paper_id": str, "section_label": str, "text": str, "score": float}, ...]
-# Lower score = more similar (cosine distance).
+retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]
+# [{"chunk_id", "paper_id", "title", "section_label", "section_path",
+#   "page_start", "page_end", "text", "score"}, ...]
+# Lower score = more similar (cosine distance). `where` is a Chroma metadata filter.
 ```
+
+Retrieval uses HyDE (Hypothetical Document Embeddings): Gemini (`GEMINI_MODEL`, default `gemini-2.5-flash`) writes a short research-style passage answering the question, and the search vector is the normalized average of the question and passage embeddings. Without `GEMINI_API_KEY`, or if the call fails after retries, it falls back to embedding the raw question.

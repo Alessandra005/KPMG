@@ -3,3 +3,5 @@ pdfplumber
 chromadb
 sentence-transformers
 python-dotenv
+numpy
+google-genai
