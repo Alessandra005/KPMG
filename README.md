@@ -312,15 +312,22 @@ A JSON list (or JSONL, one object per line). Each chunk must have these four fie
 [{"chunk_id": "2608.20331_sec2", "paper_id": "2608.20331", "section_label": "Results", "chunk_text": "..."}]
 ```
 
-### `retrieve()` contract
+### Query → retrieval contract
 
 ```python
-from retrieve import retrieve
+from retrieve import embed_query, search, retrieve
 
-retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]
+# 1. Query embedding (+ optional HyDE enrichment) -> one normalized vector
+embed_query(question: str, use_hyde: bool = True) -> list[float]
+
+# 2. Retrieval layer: takes the embedded query, returns the k closest chunks
+search(query_embedding: list[float], k: int = 5, where: dict | None = None) -> list[dict]
 # [{"chunk_id", "paper_id", "title", "section_label", "section_path",
 #   "page_start", "page_end", "text", "score"}, ...]
 # Lower score = more similar (cosine distance). `where` is a Chroma metadata filter.
+
+# Convenience: search(embed_query(question, use_hyde), k, where)
+retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]
 ```
 
-Retrieval uses HyDE (Hypothetical Document Embeddings): Gemini (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`) writes a short research-style passage answering the question, and the search vector is the normalized average of the question and passage embeddings. Without `GEMINI_API_KEY`, or if the call fails after retries, it falls back to embedding the raw question.
+Query enrichment uses HyDE (Hypothetical Document Embeddings): Gemini (`GEMINI_MODEL`, default `gemini-3.5-flash-lite`) writes a short research-style passage answering the question, and the search vector is the normalized average of the question and passage embeddings. Without `GEMINI_API_KEY`, or if the call fails after retries, it falls back to embedding the raw question.

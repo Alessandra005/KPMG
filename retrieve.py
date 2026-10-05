@@ -73,9 +73,9 @@ def embed_query(question: str, use_hyde: bool = True) -> list[float]:
     return (vec / np.linalg.norm(vec)).tolist()
 
 
-def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]:
+def search(query_embedding: list[float], k: int = 5, where: dict | None = None) -> list[dict]:
     """
-    Returns the k most similar chunks, best first:
+    Retrieval layer: returns the k chunks closest to an already-embedded query, best first:
     [{"chunk_id", "paper_id", "title", "section_label", "section_path",
       "page_start", "page_end", "text", "score"}, ...]
     Lower score = more similar (cosine distance). `where` is a Chroma metadata filter,
@@ -83,11 +83,7 @@ def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | Non
     """
     collection = get_collection()
     check_embedding_model(collection)
-    result = collection.query(
-        query_embeddings=[embed_query(question, use_hyde)],
-        n_results=k,
-        where=where,
-    )
+    result = collection.query(query_embeddings=[query_embedding], n_results=k, where=where)
     return [
         {
             "chunk_id": cid,
@@ -104,3 +100,8 @@ def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | Non
             result["ids"][0], result["documents"][0], result["metadatas"][0], result["distances"][0]
         )
     ]
+
+
+def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]:
+    """Embed (and optionally enrich) the question, then search. Same output as search()."""
+    return search(embed_query(question, use_hyde), k=k, where=where)
