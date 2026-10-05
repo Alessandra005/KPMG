@@ -283,7 +283,7 @@ This project demonstrates how GenAI and Retrieval-Augmented Generation can help 
 
 ## 🧬 **Embedding & Vector Store Module**
 
-Embeds chunked paper text with `all-MiniLM-L6-v2` (local, no API key) and stores it in ChromaDB (cosine space).
+Embeds chunked paper text with `BAAI/bge-base-en-v1.5` (local, no API key, 512-token input, 768 dimensions) and stores it in ChromaDB (cosine space). Queries get bge's search instruction prefix; documents are embedded as-is. The collection records which model built it: ingestion rebuilds it when `EMBEDDING_MODEL` changes, and `retrieve()` raises an error on a mismatch.
 
 ### Install
 
@@ -297,7 +297,7 @@ cp .env.example .env   # optional; defaults work. Keys: EMBEDDING_MODEL, CHROMA_
 
 ```bash
 python ingest.py                                   # defaults to chunks/chunks.jsonl (+ titles from chunks/papers.json)
-python ingest.py --chunks ./chunks.json --db-path ./chroma_db --model all-MiniLM-L6-v2
+python ingest.py --chunks ./chunks.json --db-path ./chroma_db --model BAAI/bge-base-en-v1.5
 ```
 
 Ingestion uses upsert, so re-running is idempotent. Deleting `chroma_db/` and re-running rebuilds it. Relative `CHROMA_DB_PATH` values resolve against the repo root, so the notebook and the scripts always share one database.

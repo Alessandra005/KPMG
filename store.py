@@ -5,12 +5,24 @@ import config
 BATCH_SIZE = 500
 
 
+def _client():
+    return chromadb.PersistentClient(path=config.CHROMA_DB_PATH)
+
+
 def get_collection():
-    client = chromadb.PersistentClient(path=config.CHROMA_DB_PATH)
-    return client.get_or_create_collection(
+    return _client().get_or_create_collection(
         name=config.COLLECTION_NAME,
-        metadata={"hnsw:space": "cosine"},
+        metadata={"hnsw:space": "cosine", "embedding_model": config.EMBEDDING_MODEL},
     )
+
+
+def check_embedding_model(collection) -> None:
+    built_with = (collection.metadata or {}).get("embedding_model")
+    if built_with != config.EMBEDDING_MODEL:
+        raise RuntimeError(
+            f"Collection '{collection.name}' was built with {built_with!r} but EMBEDDING_MODEL is "
+            f"{config.EMBEDDING_MODEL!r}. Re-run ingestion to rebuild it."
+        )
 
 
 def chunk_metadata(chunk: dict, titles: dict) -> dict:
@@ -29,6 +41,10 @@ def chunk_metadata(chunk: dict, titles: dict) -> dict:
 def ingest_chunks(chunks: list[dict], embeddings: list[list[float]], titles: dict | None = None):
     titles = titles or {}
     collection = get_collection()
+    if (collection.metadata or {}).get("embedding_model") != config.EMBEDDING_MODEL:
+        # Vectors from different models (and dimensions) can't share one index, so rebuild.
+        _client().delete_collection(config.COLLECTION_NAME)
+        collection = get_collection()
     for i in range(0, len(chunks), BATCH_SIZE):
         batch = chunks[i : i + BATCH_SIZE]
         collection.upsert(

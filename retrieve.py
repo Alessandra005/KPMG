@@ -4,7 +4,7 @@ import numpy as np
 
 import config
 from embed import embed_texts
-from store import get_collection
+from store import check_embedding_model, get_collection
 
 HYDE_PROMPT = """Write a short passage (about 120 words) from an AI research paper that \
 directly answers the question below. Use the technical terminology a researcher would use \
@@ -59,7 +59,7 @@ def hypothetical_document(question: str, retries: int = 3) -> str:
 
 def embed_query(question: str, use_hyde: bool = True) -> list[float]:
     """Average the question and HyDE passage embeddings, then re-normalize for cosine search."""
-    texts = [question]
+    texts = [config.QUERY_INSTRUCTION + question]
     if use_hyde and (doc := hypothetical_document(question)):
         texts.append(doc)
     vec = np.mean(embed_texts(texts), axis=0)
@@ -74,7 +74,9 @@ def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | Non
     Lower score = more similar (cosine distance). `where` is a Chroma metadata filter,
     e.g. {"paper_id": "2608.20316"}.
     """
-    result = get_collection().query(
+    collection = get_collection()
+    check_embedding_model(collection)
+    result = collection.query(
         query_embeddings=[embed_query(question, use_hyde)],
         n_results=k,
         where=where,
