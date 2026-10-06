@@ -3,6 +3,7 @@ import time
 import numpy as np
 
 import config
+import store
 from embed import embed_texts
 
 HYDE_PROMPT = """Write a short passage (about 120 words) from an AI research paper that \
@@ -74,22 +75,40 @@ def embed_query(question: str, use_hyde: bool = True) -> list[float]:
 
 def search(query_embedding: list[float], k: int = 5, where: dict | None = None) -> list[dict]:
     """
-    Retrieval layer (TODO): return the k chunks closest to an already-embedded query, best first.
-
-    Input: `query_embedding` is the normalized 768-dim vector from embed_query() (baseline or
-    HyDE-enriched). `where` is an optional Chroma metadata filter, e.g. {"paper_id": "2608.20316"}.
-
-    Output, one dict per chunk:
-    [{"chunk_id", "paper_id", "title", "section_label", "section_path",
-      "page_start", "page_end", "text", "score"}, ...]
-    `score` is cosine distance, lower = more similar.
-
-    The collection is store.get_collection(); call store.check_embedding_model(collection)
-    first so an empty or mismatched database fails with a clear message. Each record has
-    id = chunk_id, document = chunk text, and metadata with paper_id, title, section_label,
-    section_path, chunk_index, page_start, page_end.
+    Retrieval layer: return the k chunks closest to an already-embedded query, best first.
+    ... (docstring unchanged) ...
     """
-    raise NotImplementedError("search() is the retrieval layer and has not been implemented yet.")
+    collection = store.get_collection()
+    store.check_embedding_model(collection)
+
+    query_kwargs = {
+        "query_embeddings": [query_embedding],
+        "n_results": k,
+    }
+    if where:
+        query_kwargs["where"] = where
+
+    result = collection.query(**query_kwargs)
+
+    return [
+        {
+            "chunk_id": chunk_id,
+            "paper_id": meta.get("paper_id"),
+            "title": meta.get("title"),
+            "section_label": meta.get("section_label"),
+            "section_path": meta.get("section_path"),
+            "page_start": meta.get("page_start"),
+            "page_end": meta.get("page_end"),
+            "text": doc,
+            "score": round(dist, 4),
+        }
+        for chunk_id, doc, meta, dist in zip(
+            result["ids"][0],
+            result["documents"][0],
+            result["metadatas"][0],
+            result["distances"][0],
+        )
+    ]
 
 
 def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]:
