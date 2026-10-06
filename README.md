@@ -14,7 +14,7 @@
 | Curtis Lu        | @CurtisLuu    | Break Through Tech Fellow                                                |
 | Bhagyesh Jethwani| @Babagesh     | Break Through Tech Fellow                                                |
 | Alessandra Uribe | @Alessandra005| Break Through Tech Fellow                                                |
-
+| Yvonne Liang     | @yvonnelxxxx  | Break Through Tech Fellow                                                |
 ---
 
 ## 🎯 **Project Highlights**
