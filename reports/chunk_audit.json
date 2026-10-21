@@ -1,0 +1,89 @@
+{
+  "chunk_count": 136,
+  "unique_chunk_ids": 136,
+  "duplicate_chunk_id_count": 0,
+  "paper_count": 5,
+  "section_count": 79,
+  "text_length_chars": {
+    "min": 238,
+    "median": 2143,
+    "max": 3831,
+    "mean": 2035.3
+  },
+  "missing_or_empty_optional_metadata_counts": {
+    "title": 136
+  },
+  "issues_by_kind": {
+    "long_chunk_review": 9
+  },
+  "issues": [
+    {
+      "chunk_index_in_file": 71,
+      "chunk_id": "2608.20319_s04_c00",
+      "paper_id": "2608.20319",
+      "kind": "long_chunk_review",
+      "detail": "3012 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 78,
+      "chunk_id": "2608.20319_s09_c01",
+      "paper_id": "2608.20319",
+      "kind": "long_chunk_review",
+      "detail": "3052 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 92,
+      "chunk_id": "2608.20319_s22_c00",
+      "paper_id": "2608.20319",
+      "kind": "long_chunk_review",
+      "detail": "3141 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 96,
+      "chunk_id": "2608.20320_s01_c01",
+      "paper_id": "2608.20320",
+      "kind": "long_chunk_review",
+      "detail": "3151 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 97,
+      "chunk_id": "2608.20320_s01_c02",
+      "paper_id": "2608.20320",
+      "kind": "long_chunk_review",
+      "detail": "3831 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 102,
+      "chunk_id": "2608.20320_s06_c00",
+      "paper_id": "2608.20320",
+      "kind": "long_chunk_review",
+      "detail": "3136 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 116,
+      "chunk_id": "2608.20320_s16_c00",
+      "paper_id": "2608.20320",
+      "kind": "long_chunk_review",
+      "detail": "3088 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 130,
+      "chunk_id": "2608.20331_s05_c00",
+      "paper_id": "2608.20331",
+      "kind": "long_chunk_review",
+      "detail": "3533 characters (> 3000)"
+    },
+    {
+      "chunk_index_in_file": 133,
+      "chunk_id": "2608.20331_s08_c00",
+      "paper_id": "2608.20331",
+      "kind": "long_chunk_review",
+      "detail": "3692 characters (> 3000)"
+    }
+  ],
+  "notes": [
+    "Short/long chunk findings are review flags, not automatic failures.",
+    "Page numbering conventions can vary by source; verify flagged page ranges against the PDF.",
+    "This audit does not assess semantic relevance or embedding quality."
+  ]
+}

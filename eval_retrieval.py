@@ -70,33 +70,70 @@ def is_relevant(hit, paper, sections):
     return hit["paper_id"] == paper and any(hit["section_path"].startswith(s) for s in sections)
 
 
+
 def evaluate(use_hyde):
-    paper_hit1, paper_p5, sec_hit1, sec_hit5, mrr, best_in, best_off, secs = [], [], [], [], [], [], [], []
+    paper_hit1, paper_p5 = [], []
+    sec_hit1, sec_hit5, mrr = [], [], []
+    relevant_distances, retrieval_misses = [], []
+    best_off, secs = [], []
+
     for q, paper, sections in QUESTIONS:
         t = time.perf_counter()
         hits = r.retrieve(q, k=K, use_hyde=use_hyde)
         secs.append(time.perf_counter() - t)
+
         rel = [is_relevant(h, paper, sections) for h in hits]
-        paper_hit1.append(hits[0]["paper_id"] == paper)
+        paper_hit1.append(bool(hits) and hits[0]["paper_id"] == paper)
         paper_p5.append(sum(h["paper_id"] == paper for h in hits) / K)
-        sec_hit1.append(rel[0])
+        sec_hit1.append(bool(rel) and rel[0])
         sec_hit5.append(any(rel))
         mrr.append(next((1 / (i + 1) for i, x in enumerate(rel) if x), 0.0))
-        best_in.append(hits[0]["score"])
+
+        # Measure distance only among relevant chunks in the top K.
+        matching_distances = [
+            h["distance"] for h, relevant in zip(hits, rel) if relevant
+        ]
+        if matching_distances:
+            relevant_distances.append(min(matching_distances))
+        else:
+            retrieval_misses.append(q)
+            print(f"\nRETRIEVAL MISS (HyDE={use_hyde}): {q}")
+            for rank, hit in enumerate(hits, start=1):
+                print(
+                    f"  {rank}. paper={hit.get('paper_id')} "
+                    f"section={hit.get('section_path') or hit.get('section_label')} "
+                    f"distance={hit.get('distance')}"
+                )
+
     for q in OFF_TOPIC:
-        best_off.append(r.retrieve(q, k=1, use_hyde=use_hyde)[0]["score"])
+        hits = r.retrieve(q, k=1, use_hyde=use_hyde)
+        if hits:
+            best_off.append(hits[0]["distance"])
+
     mean = statistics.mean
     return {
-        "HyDE passages generated": len(r._hyde_cache) / (len(QUESTIONS) + len(OFF_TOPIC)) if use_hyde else 0.0,
+        "HyDE passages generated": (
+            len(r._hyde_cache) / (len(QUESTIONS) + len(OFF_TOPIC))
+            if use_hyde else 0.0
+        ),
         "paper Hit@1": mean(paper_hit1),
         "paper Precision@5": mean(paper_p5),
         "section Hit@1": mean(sec_hit1),
         "section Hit@5": mean(sec_hit5),
         "section MRR": mean(mrr),
-        "worst in-scope best distance": max(best_in),
-        "closest off-topic distance": min(best_off),
-        "seconds per query": mean(secs),
+        "section retrieval misses@5": len(retrieval_misses),
+        "mean relevant distance@5": (
+            mean(relevant_distances) if relevant_distances else float("nan")
+        ),
+        "worst relevant distance@5": (
+            max(relevant_distances) if relevant_distances else float("nan")
+        ),
+        "closest off-topic distance": (
+            min(best_off) if best_off else float("nan")
+        ),
+        "seconds per in-scope query": mean(secs),
     }
+
 
 
 def main():
