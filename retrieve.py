@@ -56,27 +56,55 @@ def hypothetical_document(question: str, retries: int = 3) -> str:
                 print(f"HyDE generation failed, using the raw question only: {e}")
                 return ""
             time.sleep(2**attempt)
+        except errors.ClientError as e:
+            if "RESOURCE_EXHAUSTED" in str(e):
+                if attempt == retries - 1:
+                    print(
+                        f"HyDE rate-limited, using the raw question only this time: {e}"
+                    )
+                    return ""
+
+                time.sleep(5)  # Allow headroom for the free tier's 15 req/min limit.
+                continue
+
+            _hyde_disabled_reason = str(e)
+            print(
+                f"HyDE disabled for this session, using the raw question only: {e}"
+            )
+            return ""
+
         except Exception as e:
-            # Client errors (bad model name, quota exhausted, invalid key) won't fix themselves
-            # on retry, so skip HyDE for the rest of the session instead of failing per query.
             _hyde_disabled_reason = str(e)
             print(f"HyDE disabled for this session, using the raw question only: {e}")
             return ""
 
 
-def embed_query(question: str, use_hyde: bool = True) -> list[float]:
+def embed_query(question: str, use_hyde: bool = False) -> list[float]:
     """Average the question and HyDE passage embeddings, then re-normalize for cosine search."""
     texts = [config.QUERY_INSTRUCTION + question]
     if use_hyde and (doc := hypothetical_document(question)):
         texts.append(doc)
     vec = np.mean(embed_texts(texts), axis=0)
-    return (vec / np.linalg.norm(vec)).tolist()
+    norm = np.linalg.norm(vec)
+
+    if not np.isfinite(norm) or norm == 0:
+        raise ValueError("Query embedding has an invalid or zero norm.")
+    return (vec / norm).tolist()
 
 
-def search(query_embedding: list[float], k: int = 5, where: dict | None = None) -> list[dict]:
+def search(
+    query_embedding: list[float],
+    k: int = 5,
+    where: dict | None = None,
+) -> list[dict]:
     """
-    Retrieval layer: return the k chunks closest to an already-embedded query, best first.
-    ... (docstring unchanged) ...
+    Retrieval layer: return the k chunks closest to an already-embedded query,
+    best first.
+
+    Each result includes both "distance" and "score" set to the same cosine-distance
+    value (lower = more similar) — kept as two keys temporarily so eval_retrieval.py,
+    reviewer_agent.py, and the notebook's generation code don't all need to be patched
+    at once. Pick one name as a team and drop the other once everything's migrated.
     """
     collection = store.get_collection()
     store.check_embedding_model(collection)
@@ -85,13 +113,21 @@ def search(query_embedding: list[float], k: int = 5, where: dict | None = None) 
         "query_embeddings": [query_embedding],
         "n_results": k,
     }
+
     if where:
         query_kwargs["where"] = where
 
     result = collection.query(**query_kwargs)
 
-    return [
-        {
+    hits = []
+    for chunk_id, doc, meta, dist in zip(
+        result["ids"][0],
+        result["documents"][0],
+        result["metadatas"][0],
+        result["distances"][0],
+    ):
+        dist_val = round(float(dist), 4)
+        hits.append({
             "chunk_id": chunk_id,
             "paper_id": meta.get("paper_id"),
             "title": meta.get("title"),
@@ -100,17 +136,17 @@ def search(query_embedding: list[float], k: int = 5, where: dict | None = None) 
             "page_start": meta.get("page_start"),
             "page_end": meta.get("page_end"),
             "text": doc,
-            "score": round(dist, 4),
-        }
-        for chunk_id, doc, meta, dist in zip(
-            result["ids"][0],
-            result["documents"][0],
-            result["metadatas"][0],
-            result["distances"][0],
-        )
-    ]
+            "distance": dist_val,
+            "score": dist_val,
+        })
+    return hits
 
 
-def retrieve(question: str, k: int = 5, use_hyde: bool = True, where: dict | None = None) -> list[dict]:
+def retrieve(
+    question: str,
+    k: int = 5,
+    use_hyde: bool = False,
+    where: dict | None = None,
+) -> list[dict]:
     """Embed (and optionally enrich) the question, then search. Same output as search()."""
     return search(embed_query(question, use_hyde), k=k, where=where)
